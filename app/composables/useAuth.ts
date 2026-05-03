@@ -4,6 +4,11 @@ interface User {
   email: string
   role: 'user' | 'seller' | 'admin'
   phone?: string
+  dni?: string
+  address?: string
+  city?: string
+  district?: string
+  avatarUrl?: string
 }
 
 const user = ref<User | null>(null)
@@ -20,30 +25,54 @@ export function useAuth() {
     }
   }
 
+  function saveSession(t: string, u: User) {
+    token.value = t
+    user.value = u
+    if (import.meta.client) {
+      localStorage.setItem('token', t)
+      localStorage.setItem('user', JSON.stringify(u))
+    }
+  }
+
   async function login(email: string, password: string) {
     const data = await $fetch<{ token: string; user: User }>(`${config.public.apiUrl}/api/auth/login`, {
       method: 'POST',
       body: { email, password }
     })
-    token.value = data.token
-    user.value = data.user
-    if (import.meta.client) {
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-    }
+    saveSession(data.token, data.user)
     return data
   }
 
-  async function register(name: string, email: string, password: string, phone?: string) {
+  async function register(form: {
+    name: string; email: string; password: string;
+    phone: string; dni: string; address: string; city: string; district?: string
+  }) {
     const data = await $fetch<{ token: string; user: User }>(`${config.public.apiUrl}/api/auth/register`, {
       method: 'POST',
-      body: { name, email, password, phone }
+      body: form
     })
-    token.value = data.token
-    user.value = data.user
+    saveSession(data.token, data.user)
+    return data
+  }
+
+  async function googleAuth(accessToken: string) {
+    const data = await $fetch<{ token: string; user: User; profileComplete: boolean }>(`${config.public.apiUrl}/api/auth/google`, {
+      method: 'POST',
+      body: { token: accessToken }
+    })
+    saveSession(data.token, data.user)
+    return data
+  }
+
+  async function updateProfile(fields: Partial<User>) {
+    const data = await $fetch<User>(`${config.public.apiUrl}/api/me`, {
+      method: 'PATCH',
+      headers: authHeaders(),
+      body: fields
+    })
+    user.value = data
     if (import.meta.client) {
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
+      localStorage.setItem('user', JSON.stringify(data))
     }
     return data
   }
@@ -60,10 +89,14 @@ export function useAuth() {
   const isLoggedIn = computed(() => !!token.value)
   const isAdmin = computed(() => user.value?.role === 'admin')
   const isSeller = computed(() => user.value?.role === 'seller' || user.value?.role === 'admin')
+  const profileComplete = computed(() => !!(user.value?.dni && user.value?.phone && user.value?.address))
 
-  function authHeaders() {
+  function authHeaders(): Record<string, string> {
     return token.value ? { Authorization: `Bearer ${token.value}` } : {}
   }
 
-  return { user, token, login, register, logout, init, isLoggedIn, isAdmin, isSeller, authHeaders }
+  return {
+    user, token, login, register, googleAuth, updateProfile,
+    logout, init, isLoggedIn, isAdmin, isSeller, profileComplete, authHeaders
+  }
 }

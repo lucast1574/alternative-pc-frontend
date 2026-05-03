@@ -41,7 +41,15 @@
           <p>Completa el formulario, revisamos tu parte y te hacemos una oferta. Pago rápido.</p>
         </div>
 
-        <form @submit.prevent="submitSellRequest" class="sell-form">
+        <div v-if="!isLoggedIn" class="login-prompt">
+          <p>🔐 Necesitas una cuenta para vender tus partes</p>
+          <div class="prompt-actions">
+            <NuxtLink to="/registro" class="btn primary">Crear cuenta</NuxtLink>
+            <NuxtLink to="/login" class="btn secondary">Ya tengo cuenta</NuxtLink>
+          </div>
+        </div>
+
+        <form v-else @submit.prevent="submitSellRequest" class="sell-form">
           <div class="form-row">
             <div class="form-group">
               <label>Tipo de parte *</label>
@@ -104,22 +112,6 @@
             <small>*El monto final se determina después de la revisión física</small>
           </div>
 
-          <h3 class="form-subtitle">Tus datos de contacto</h3>
-          <div class="form-row three">
-            <div class="form-group">
-              <label>Nombre *</label>
-              <input v-model="sellForm.sellerName" type="text" required />
-            </div>
-            <div class="form-group">
-              <label>Email *</label>
-              <input v-model="sellForm.sellerEmail" type="email" required />
-            </div>
-            <div class="form-group">
-              <label>Teléfono *</label>
-              <input v-model="sellForm.sellerPhone" type="tel" required />
-            </div>
-          </div>
-
           <button type="submit" class="btn primary full" :disabled="sellLoading">
             {{ sellLoading ? 'Enviando...' : '📦 Enviar solicitud de venta' }}
           </button>
@@ -142,7 +134,15 @@
           <p>¿Tu PC anda lenta o tiene problemas? Nuestro experto la deja como nueva.</p>
         </div>
 
-        <form @submit.prevent="submitMaintenance" class="sell-form">
+        <div v-if="!isLoggedIn" class="login-prompt">
+          <p>🔐 Necesitas una cuenta para solicitar mantenimiento</p>
+          <div class="prompt-actions">
+            <NuxtLink to="/registro" class="btn primary">Crear cuenta</NuxtLink>
+            <NuxtLink to="/login" class="btn secondary">Ya tengo cuenta</NuxtLink>
+          </div>
+        </div>
+
+        <form v-else @submit.prevent="submitMaintenance" class="sell-form">
           <div class="form-row">
             <div class="form-group">
               <label>Tipo de servicio *</label>
@@ -178,22 +178,6 @@
             <textarea v-model="maintForm.description" placeholder="Cuéntanos qué le pasa a tu equipo..." rows="3" required></textarea>
           </div>
 
-          <h3 class="form-subtitle">Tus datos de contacto</h3>
-          <div class="form-row three">
-            <div class="form-group">
-              <label>Nombre *</label>
-              <input v-model="maintForm.clientName" type="text" required />
-            </div>
-            <div class="form-group">
-              <label>Email *</label>
-              <input v-model="maintForm.clientEmail" type="email" required />
-            </div>
-            <div class="form-group">
-              <label>Teléfono *</label>
-              <input v-model="maintForm.clientPhone" type="tel" required />
-            </div>
-          </div>
-
           <button type="submit" class="btn primary full" :disabled="maintLoading">
             {{ maintLoading ? 'Enviando...' : '🔧 Solicitar mantenimiento' }}
           </button>
@@ -212,6 +196,7 @@
 
 <script setup>
 const config = useRuntimeConfig()
+const { isLoggedIn, authHeaders } = useAuth()
 
 // Listings
 const listings = ref([])
@@ -231,8 +216,7 @@ function categoryLabel(cat) {
 
 // Sell form
 const sellForm = reactive({
-  partType: '', brand: '', model: '', condition: '',
-  description: '', sellerName: '', sellerEmail: '', sellerPhone: ''
+  partType: '', brand: '', model: '', condition: '', description: ''
 })
 const sellLoading = ref(false)
 const sellSuccess = ref('')
@@ -260,7 +244,7 @@ async function submitSellRequest() {
   sellError.value = ''
   try {
     const res = await $fetch(`${config.public.apiUrl}/api/sell-requests`, {
-      method: 'POST', body: { ...sellForm }
+      method: 'POST', headers: authHeaders(), body: { ...sellForm }
     })
     sellSuccess.value = res.message
     Object.keys(sellForm).forEach(k => sellForm[k] = '')
@@ -272,8 +256,7 @@ async function submitSellRequest() {
 
 // Maintenance form
 const maintForm = reactive({
-  serviceType: '', description: '', deviceType: '',
-  deviceBrand: '', clientName: '', clientEmail: '', clientPhone: ''
+  serviceType: '', description: '', deviceType: '', deviceBrand: ''
 })
 const maintLoading = ref(false)
 const maintSuccess = ref('')
@@ -285,7 +268,7 @@ async function submitMaintenance() {
   maintError.value = ''
   try {
     const res = await $fetch(`${config.public.apiUrl}/api/maintenance-requests`, {
-      method: 'POST', body: { ...maintForm }
+      method: 'POST', headers: authHeaders(), body: { ...maintForm }
     })
     maintSuccess.value = res.message
     Object.keys(maintForm).forEach(k => maintForm[k] = '')
@@ -401,4 +384,11 @@ async function submitMaintenance() {
   margin-top: 1rem; padding: 1rem; background: #2d0a0a;
   border: 1px solid #7f1d1d; border-radius: 8px; color: #fca5a5;
 }
+
+.login-prompt {
+  max-width: 700px; margin: 0 auto; text-align: center;
+  background: #151515; padding: 2.5rem; border-radius: 16px; border: 1px solid #222;
+}
+.login-prompt p { font-size: 1.1rem; margin-bottom: 1.5rem; color: #ccc; }
+.prompt-actions { display: flex; gap: 1rem; justify-content: center; }
 </style>
