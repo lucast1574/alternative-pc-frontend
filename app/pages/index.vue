@@ -47,17 +47,26 @@
               <label>Tipo de parte *</label>
               <select v-model="sellForm.partType" required>
                 <option value="">Seleccionar...</option>
-                <option value="cpu">Procesador (CPU)</option>
-                <option value="gpu">Tarjeta de video (GPU)</option>
-                <option value="ram">Memoria RAM</option>
-                <option value="motherboard">Placa madre</option>
-                <option value="storage">Almacenamiento (SSD/HDD)</option>
-                <option value="psu">Fuente de poder</option>
-                <option value="case">Case / Gabinete</option>
-                <option value="cooler">Cooler / Ventilador</option>
-                <option value="monitor">Monitor</option>
-                <option value="keyboard">Teclado</option>
-                <option value="mouse">Mouse</option>
+                <optgroup label="Equipos completos">
+                  <option value="pc_desktop">PC de escritorio completa</option>
+                  <option value="laptop">Laptop</option>
+                  <option value="all_in_one">All-in-One</option>
+                </optgroup>
+                <optgroup label="Componentes">
+                  <option value="cpu">Procesador (CPU)</option>
+                  <option value="gpu">Tarjeta de video (GPU)</option>
+                  <option value="ram">Memoria RAM</option>
+                  <option value="motherboard">Placa madre</option>
+                  <option value="storage">Almacenamiento (SSD/HDD)</option>
+                  <option value="psu">Fuente de poder</option>
+                  <option value="case">Case / Gabinete</option>
+                  <option value="cooler">Cooler / Ventilador</option>
+                </optgroup>
+                <optgroup label="Periféricos">
+                  <option value="monitor">Monitor</option>
+                  <option value="keyboard">Teclado</option>
+                  <option value="mouse">Mouse</option>
+                </optgroup>
                 <option value="otro">Otro</option>
               </select>
             </div>
@@ -231,6 +240,8 @@ const sellError = ref('')
 const estimate = ref(null)
 
 const estimates = {
+  pc_desktop: { min: 100, max: 600 }, laptop: { min: 80, max: 500 },
+  all_in_one: { min: 80, max: 450 },
   cpu: { min: 30, max: 150 }, gpu: { min: 50, max: 300 },
   ram: { min: 15, max: 60 }, motherboard: { min: 25, max: 120 },
   storage: { min: 15, max: 80 }, psu: { min: 15, max: 60 },
