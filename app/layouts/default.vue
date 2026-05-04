@@ -1,34 +1,37 @@
 <template>
   <div class="layout">
-    <header class="navbar">
-      <div class="nav-container">
-        <NuxtLink to="/" class="logo">🖥️ Alternative PC</NuxtLink>
+    <header class="nav">
+      <div class="nav-inner">
+        <NuxtLink to="/" class="nav-logo">
+          <img src="/img/logo-white.svg" alt="Alternative PC" />
+        </NuxtLink>
+
         <nav class="nav-links">
-          <NuxtLink to="/">Inicio</NuxtLink>
           <NuxtLink to="/marketplace">Marketplace</NuxtLink>
           <template v-if="isLoggedIn">
             <NuxtLink v-if="isSeller" to="/mis-publicaciones">Mis publicaciones</NuxtLink>
             <NuxtLink v-if="isAdmin" to="/admin">Admin</NuxtLink>
-            <div class="user-menu">
-              <span class="user-name">{{ user?.name }}</span>
-              <span class="role-badge" :class="user?.role">{{ user?.role }}</span>
-              <button @click="logout" class="btn-logout">Salir</button>
+            <div class="nav-user">
+              <span class="nav-role" :class="user?.role">{{ user?.role }}</span>
+              <span class="nav-name">{{ user?.name?.split(' ')[0] }}</span>
+              <button @click="logout" class="nav-logout">Salir</button>
             </div>
           </template>
           <template v-else>
-            <NuxtLink to="/login" class="btn-nav">Ingresar</NuxtLink>
-            <NuxtLink to="/registro" class="btn-nav primary">Registrarse</NuxtLink>
+            <NuxtLink to="/login" class="nav-btn">Ingresar</NuxtLink>
+            <NuxtLink to="/registro" class="nav-btn filled">Crear cuenta</NuxtLink>
           </template>
         </nav>
       </div>
     </header>
 
-    <main class="main-content">
-      <slot />
-    </main>
+    <main><slot /></main>
 
-    <footer class="footer">
-      <p>© 2026 Alternative PC — Compra, vende y repara tu PC</p>
+    <footer class="foot">
+      <div class="foot-inner">
+        <img src="/img/logo-white.svg" alt="Alternative PC" class="foot-logo" />
+        <p>© 2026 Alternative PC. Todos los derechos reservados.</p>
+      </div>
     </footer>
   </div>
 </template>
@@ -40,91 +43,55 @@ const { user, isLoggedIn, isAdmin, isSeller, logout } = useAuth()
 <style scoped>
 .layout { min-height: 100vh; display: flex; flex-direction: column; }
 
-.navbar {
-  background: #111;
-  border-bottom: 1px solid #222;
-  padding: 0 2rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
 }
-
-.nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
+.nav-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between; height: 60px;
 }
+.nav-logo img { height: 28px; opacity: 0.95; }
+.nav-logo img:hover { opacity: 1; }
 
-.logo {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #fff !important;
-  text-decoration: none !important;
+.nav-links { display: flex; align-items: center; gap: 2rem; }
+.nav-links a { font-size: 0.85rem; color: var(--text-secondary); letter-spacing: -0.01em; transition: color 0.15s; }
+.nav-links a:hover, .nav-links a.router-link-active { color: #fff; opacity: 1; }
+
+.nav-btn {
+  font-size: 0.85rem; padding: 6px 16px; border-radius: 6px;
+  border: 1px solid var(--border-hover); color: var(--text-secondary);
 }
+.nav-btn:hover { color: #fff; border-color: #555; }
+.nav-btn.filled { background: #fff; color: #000; border-color: #fff; }
+.nav-btn.filled:hover { background: #ddd; opacity: 1; }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+.nav-user { display: flex; align-items: center; gap: 8px; }
+.nav-name { font-size: 0.85rem; color: var(--text-secondary); }
+.nav-role {
+  font-size: 0.65rem; padding: 2px 6px; border-radius: 3px;
+  text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
 }
-
-.nav-links a {
-  color: #a1a1a1;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: color 0.2s;
+.nav-role.admin { background: #fff; color: #000; }
+.nav-role.seller { background: var(--border-hover); color: #fff; }
+.nav-role.user { background: var(--border); color: var(--text-muted); }
+.nav-logout {
+  font-size: 0.8rem; background: none; border: 1px solid var(--border);
+  color: var(--text-muted); padding: 4px 10px; border-radius: 4px; cursor: pointer;
 }
-.nav-links a:hover, .nav-links a.router-link-active { color: #fff; }
+.nav-logout:hover { border-color: var(--red); color: var(--red); }
 
-.btn-nav {
-  padding: 6px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-  background: #1e1e1e;
-}
-.btn-nav.primary { background: #3b82f6; color: #fff !important; }
-.btn-nav.primary:hover { background: #2563eb; }
+main { flex: 1; }
 
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.foot { border-top: 1px solid var(--border); padding: 3rem 2rem; }
+.foot-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.foot-logo { height: 22px; opacity: 0.4; }
+.foot p { font-size: 0.75rem; color: var(--text-muted); }
 
-.user-name { color: #e5e5e5; font-size: 0.9rem; }
-
-.role-badge {
-  font-size: 0.7rem;
-  padding: 2px 8px;
-  border-radius: 12px;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-.role-badge.admin { background: #ef4444; color: #fff; }
-.role-badge.seller { background: #f59e0b; color: #000; }
-.role-badge.user { background: #333; color: #aaa; }
-
-.btn-logout {
-  background: none;
-  border: 1px solid #333;
-  color: #aaa;
-  padding: 4px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.8rem;
-}
-.btn-logout:hover { border-color: #ef4444; color: #ef4444; }
-
-.main-content { flex: 1; }
-
-.footer {
-  text-align: center;
-  padding: 2rem;
-  color: #555;
-  font-size: 0.85rem;
-  border-top: 1px solid #1a1a1a;
+@media (max-width: 768px) {
+  .nav-links { gap: 1rem; }
+  .nav-links a:not(.nav-btn) { display: none; }
 }
 </style>

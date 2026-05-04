@@ -10,17 +10,38 @@ onMounted(() => init())
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg: #000;
+  --bg-card: #0a0a0a;
+  --bg-elevated: #111;
+  --border: #1a1a1a;
+  --border-hover: #333;
+  --text: #fff;
+  --text-secondary: #888;
+  --text-muted: #555;
+  --accent: #fff;
+  --accent-hover: #ddd;
+  --green: #00ff6a;
+  --red: #ff3b30;
+}
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: #0a0a0a;
-  color: #e5e5e5;
-  min-height: 100vh;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
-a { color: #3b82f6; text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: var(--text); text-decoration: none; }
+a:hover { opacity: 0.8; }
+
+::selection { background: #fff; color: #000; }
+
+input, select, textarea {
+  font-family: inherit;
+}
 </style>

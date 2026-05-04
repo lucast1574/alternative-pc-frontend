@@ -10,13 +10,15 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Alternative PC - Compra y vende PCs de segunda mano',
+      title: 'Alternative PC',
       meta: [
-        { name: 'description', content: 'Marketplace de PCs y componentes de segunda mano. Vende tus partes, compra PCs armadas, y servicios de mantenimiento.' },
+        { name: 'description', content: 'Compra, vende y repara PCs y componentes de segunda mano.' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#000000' },
       ],
       link: [
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' }
+        { rel: 'icon', href: '/img/logo.svg', type: 'image/svg+xml' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap' }
       ]
     }
   }
